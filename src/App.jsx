@@ -1,66 +1,36 @@
-import React, {useState, useEffect, useRef} from 'react'
-import './App.css'
+import React from "react";
+import "./App.css";
+import useWordGame from "./hooks/useWordGame";
 
 function App() {
-  const STARTING_TIME = 5;
-  const [inputtedData, setInputedData] = useState("");
-  const [timeRemaining, setTimeRemaining] = useState(STARTING_TIME);
-  const [timerStarted, setTimerStarted] = useState(false);
-  const [wordCount, setWordCount] = useState(0);
-  const [isDisabled, setDisabled] = useState(false);
-  const textAreaRef = useRef();
-
-  let handleChange = event => {
-    const {value} = event.target;
-    setInputedData(value);
-  }
-
-  let calculateWordCount = text => {
-    setTimerStarted(true);
-    const wordsArr = text.trim().split(" ");
-    const filteredWords = wordsArr.filter(word => word !== "");
-    return filteredWords.length;
-  }
-
-  let startGame = () => {
-    setInputedData("");
-    setTimerStarted(true);
-    setTimeRemaining(STARTING_TIME);
-    setDisabled(true)
-    textAreaRef.current.focus()
-  }
-
-  let endGame = () => {
-    setTimerStarted(false);
-    const total = calculateWordCount(inputtedData);
-    setWordCount(total);
-    setDisabled(false)
-  }
-
-  useEffect(() => {
-    if (timeRemaining > 0 && timerStarted === true) {
-      setTimeout(() => {
-        setTimeRemaining(time => time - 1);
-      }, 1000)      
-    } else if (timeRemaining === 0) {
-      endGame();
-    }
-  }, [timeRemaining, timerStarted]);
-  
+  const {
+    textAreaRef,
+    isDisabled,
+    handleChange,
+    inputtedData,
+    timeRemaining,
+    wordCount,
+    startGame,
+  } = useWordGame(5);
   return (
     <>
       <h1>How fast do you type?</h1>
-      <textarea 
-        ref={textAreaRef} 
-        disabled={!isDisabled} 
-        onChange={handleChange} 
-        value={inputtedData} 
+      <textarea
+        ref={textAreaRef}
+        disabled={!isDisabled}
+        onChange={handleChange}
+        value={inputtedData}
       />
       <h4>Time Remaining: {timeRemaining}</h4>
-      <button disabled={isDisabled} onClick={() => startGame()}>Start</button>
-      <h1>Word Count: {wordCount}</h1>
+      <button disabled={isDisabled} onClick={() => startGame()}>
+        Start
+      </button>
+      <h1>
+        Word Count:
+        {wordCount}
+      </h1>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
